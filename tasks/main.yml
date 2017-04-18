@@ -6,20 +6,11 @@
   with_items:
     - "{{ doctl_zip_url }}"
     - "{{ doctl_checksum_url }}"
-    - "{{ doctl_signature_url }}"
+    - "{{ doctl_signature_url|default(omit) }}"
 
-- name: Fetch Hashicorp GPG key.
-  command: gpg --recv-key "91A6E7F85D05C65630BEF18951852D87348FFC4C"
-  register: doctl_gpg_key_result
-  changed_when: "'unchanged: 1' not in doctl_gpg_key_result.stderr"
-
-- name: Validate GPG signature on checksum file.
-  command: >
-    gpg --verify
-    "{{ doctl_download_dir }}/{{ doctl_signature_url|basename }}"
-    "{{ doctl_download_dir }}/{{ doctl_checksum_url|basename }}"
-  register: doctl_gpg_key_result
-  changed_when: false
+- include: gpg.yml
+  # Skip by default, since no signatures exist.
+  when: doctl_signature_url is defined and doctl_signature_url
 
 - name: Verify checksums.
   command: >
@@ -29,15 +20,15 @@
   args:
     chdir: "{{ doctl_download_dir }}"
 
-- name: Check Packer version.
-  command: packer version
+- name: Check Doctl version.
+  command: doctl version
   ignore_errors: yes
   changed_when: false
   register: doctl_version_result
 
-- name: Extract Packer binary files.
+- name: Extract Doctl binary files.
   unarchive:
     remote_src: yes
     src: "{{ doctl_download_dir }}/{{ doctl_zip_url|basename }}"
     dest: /usr/local/bin
-  when: "doctl_version_result.stdout|default('') != 'Packer v'+doctl_version"
+  when: "doctl_version_result.stdout|default('') != 'Doctl v'+doctl_version"

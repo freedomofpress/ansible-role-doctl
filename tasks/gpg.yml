@@ -1,0 +1,15 @@
+---
+# Boilerplate if GPG-signed checksum files are ever provided.
+- name: Fetch Doctl GPG key.
+  command: gpg --recv-key #"<TBD>"
+  register: doctl_gpg_key_result
+  changed_when: "'unchanged: 1' not in doctl_gpg_key_result.stderr"
+
+- name: Validate GPG signature on checksum file.
+  command: >
+    gpg --verify
+    "{{ doctl_download_dir }}/{{ doctl_signature_url|basename }}"
+    "{{ doctl_download_dir }}/{{ doctl_checksum_url|basename }}"
+  register: doctl_gpg_key_result
+  changed_when: false
+

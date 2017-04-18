@@ -1,0 +1,12 @@
+---
+# Hardcoded version string. Will be reused in multiple vars. Must be manually
+# updated to install new versions. Checksums will be automatically verified.
+doctl_version: 0.12.1
+
+# Directory to store downloaded files, including checksum info.
+doctl_download_dir: /usr/local/src
+
+# Download URLs for fetching ZIP file of binaries and checksum verification info.
+doctl_zip_url: "https://releases.hashicorp.com/packer/{{ doctl_version }}/doctl_{{ doctl_version }}_linux_amd64.zip"
+doctl_checksum_url: "https://releases.hashicorp.com/packer/{{ doctl_version }}/doctl_{{ doctl_version }}_SHA256SUMS"
+doctl_signature_url: "{{ doctl_checksum_url }}.sig"

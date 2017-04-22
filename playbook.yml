@@ -1,0 +1,11 @@
+---
+- hosts: all
+  pre_tasks:
+    - name: Install ca-certificates (for HTTPS fetching).
+      apt:
+        name: ca-certificates
+        state: present
+        update_cache: yes
+        cache_valid_time: 3600
+  roles:
+    - role: freedomofpress.doctl

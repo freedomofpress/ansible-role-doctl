@@ -1,12 +1,12 @@
 ---
-- name: Download Packer files.
+- name: Download Dotctl files.
   get_url:
     dest: "{{ doctl_download_dir }}/{{ item|basename }}"
     url: "{{ item }}"
   with_items:
-    - "{{ doctl_zip_url }}"
+    - "{{ doctl_tarball_url }}"
     - "{{ doctl_checksum_url }}"
-    - "{{ doctl_signature_url|default(omit) }}"
+    # - "{{ doctl_signature_url }}"
 
 - include: gpg.yml
   # Skip by default, since no signatures exist.
@@ -14,7 +14,7 @@
 
 - name: Verify checksums.
   command: >
-    sha256sum --check --status --ignore-missing
+    sha256sum --check --ignore-missing
     "{{ doctl_checksum_url|basename }}"
   changed_when: false
   args:
@@ -29,6 +29,6 @@
 - name: Extract Doctl binary files.
   unarchive:
     remote_src: yes
-    src: "{{ doctl_download_dir }}/{{ doctl_zip_url|basename }}"
+    src: "{{ doctl_download_dir }}/{{ doctl_tarball_url|basename }}"
     dest: /usr/local/bin
   when: "doctl_version_result.stdout|default('') != 'Doctl v'+doctl_version"

@@ -12,14 +12,6 @@
   # Skip by default, since no signatures exist.
   when: doctl_signature_url is defined and doctl_signature_url
 
-- name: Verify checksums.
-  command: >
-    sha256sum --check --ignore-missing
-    "{{ doctl_checksum_url|basename }}"
-  changed_when: false
-  args:
-    chdir: "{{ doctl_download_dir }}"
-
 - name: Check Doctl version.
   command: doctl version
   ignore_errors: yes
@@ -30,5 +22,15 @@
   unarchive:
     remote_src: yes
     src: "{{ doctl_download_dir }}/{{ doctl_tarball_url|basename }}"
-    dest: /usr/local/bin
-  when: "doctl_version_result.stdout|default('') != 'Doctl v'+doctl_version"
+    dest: /usr/local/bin/
+  when: "'doctl version {{ doctl_version }}-release' not in  doctl_version_result.stdout|default('')"
+
+# The checksum file contains a SHA256 checksum for the extracted binary,
+# rather than the downloaded tarball, so we must extract the tarball
+# prior to verifying.
+- name: Verify checksums.
+  command: sha256sum --check "{{ doctl_download_dir }}/{{ doctl_checksum_url|basename }}"
+  changed_when: false
+  args:
+    # cd to directory where the `doctl` binary was extracted.
+    chdir: "/usr/local/bin/"

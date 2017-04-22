@@ -12,4 +12,3 @@
     "{{ doctl_download_dir }}/{{ doctl_checksum_url|basename }}"
   register: doctl_gpg_key_result
   changed_when: false
-

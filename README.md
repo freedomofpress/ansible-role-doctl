@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/freedomofpress/ansible-role-doctl.svg?branch=master)](https://travis-ci.org/freedomofpress/ansible-role-doctl)
+
 doctl Ansible role
 ===================
 
